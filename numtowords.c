@@ -11,9 +11,11 @@ static char *numbers[] = {
     "milyon", "milyar", "trilyon"
 };
 
-static const char *numstr(int num)
+static const char
+*numstr(int digit, int place_val, int triple)
 {
     char *ret = NULL;
+    int num = digit * place_val;
 
     if (num < 11 && num > 0) {
         ret = numbers[num - 1];
@@ -28,28 +30,28 @@ static const char *numstr(int num)
         ret = numbers[11];
         break;
     case 40:
-        ret = numbers[13];
+        ret = numbers[12];
         break;
     case 50:
-        ret = numbers[14];
+        ret = numbers[13];
         break;
     case 60:
-        ret = numbers[15];
+        ret = numbers[14];
         break;
     case 70:
-        ret = numbers[16];
+        ret = numbers[15];
         break;
     case 80:
-        ret = numbers[17];
+        ret = numbers[16];
         break;
     case 90:
-        ret = numbers[18];
+        ret = numbers[17];
         break;
     case 100:
-        ret = numbers[19];
+        ret = numbers[18];
         break;
     case 1000:
-        ret = numbers[20];
+        ret = numbers[19];
         break;
     }
 
@@ -88,8 +90,10 @@ static int __num_to_words(char *buf, long num)
             ++triple;
         ++pos;
 
-        printf("rightmost = %d, val = %s, place_val = %d\n",
-                rmost_digit, numstr(rmost_digit), place_value);
+        /* TODO: numstr(digit, place_value, triple) */
+        printf("rightmost = %d, val = %s, place_val = %d, triple = %d\n",
+                rmost_digit, numstr(rmost_digit ,place_value, triple),
+                place_value, triple);
     } while (num /= 10);
 
     return 0;
