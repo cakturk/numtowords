@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-extern int num_to_words(char *buffer, double num);
+extern int num_to_words(char *buffer, double num, char sep_char);
 
 #ifdef __cplusplus
 {

@@ -29,10 +29,6 @@ static int prepend_str(const char *str)
     if (out_ptr - len < out_buf)
         return -ERANGE;
 
-    printf("buf = %u, ptr = %u, len = %u\n",
-            (unsigned long)out_buf,
-            (unsigned long)out_ptr, len);
-
     out_ptr -= len;
     memcpy(out_ptr, str, len);
 
@@ -105,48 +101,43 @@ static const char *numstr(int digit, int place_val)
     return ret;
 }
 
-static int __num_to_words(char *buf, long num);
+static int __num_to_words(char *buf, long num, char sep_char);
 static inline int _pow(int x, int y);
 
-static const char *__numstr(int digit, int pos)
+static int __numstr(int digit, int pos)
 {
-    const char *ret = NULL;
+    int ret = 0;
+    const char *str = NULL;
     int triple = pos / 3;
     int place_val = _pow(10, pos % 3);
 
     switch (pos % 3) {
     case 0:
         if (triple) {
-            ret = numstr(_pow(10, triple * 3), 1);
-            if (prepend_str(ret) != 0)
+            str = numstr(_pow(10, triple * 3), 1);
+            if ((ret = prepend_str(str)) != 0)
                 goto err_out;
-            printf("new = %s\n", ret);
             if (digit > 1) {
-                ret = numstr(digit, 1);
-                if (prepend_str(ret) != 0)
+                str = numstr(digit, 1);
+                if ((ret = prepend_str(str)) != 0)
                     goto err_out;
-                printf("new = %s\n", numstr(digit, 1));
             }
         } else {
-            ret = numstr(digit ,1);
-            if (prepend_str(ret) != 0)
+            str = numstr(digit ,1);
+            if ((ret = prepend_str(str)) != 0)
                 goto err_out;
-            printf("new = %s\n", ret);
         }
         break;
     case 1:
-        ret = numstr(digit * place_val, 1);
-        printf("new = %s\n", ret);
-        if (prepend_str(ret) != 0)
+        str = numstr(digit * place_val, 1);
+        if ((ret = prepend_str(str)) != 0)
             goto err_out;
         break;
     case 2:
-        ret = numstr(place_val, 1);
-        if (prepend_str(ret) != 0)
+        str = numstr(place_val, 1);
+        if ((ret = prepend_str(str)) != 0)
             goto err_out;
-        printf("new = %s\n", ret);
-        ret = numstr(digit, 1);
-        printf("new = %s\n", ret);
+        str = numstr(digit, 1);
         break;
     }
 
@@ -154,7 +145,7 @@ err_out:
     return ret;
 }
 
-int num_to_words(char *buf, double num)
+int num_to_words(char *buf, double num, char sep_char)
 {
     (void)buf;
     int ret = 0;
@@ -162,17 +153,18 @@ int num_to_words(char *buf, double num)
     long fraction = (num - integer) * 1000;
 
     printf("integer = %ld, fraction=%ld\n", integer, fraction);
-    __num_to_words(NULL, integer);
+    __num_to_words(NULL, integer, sep_char);
 
     return ret;
 }
 
-static int __num_to_words(char *buf, long num)
+static int __num_to_words(char *buf, long num, char sep_char)
 {
     (void)buf;
     unsigned char rmost_digit;
     int pos = 0;
     int triple = 0;
+    int result = 0;
 
     char dummy_buf[256];
     out_buf = dummy_buf;
@@ -183,21 +175,24 @@ static int __num_to_words(char *buf, long num)
     /* Extract rightmost digit and shift right */
     do {
         rmost_digit = num % 10;
-        __numstr(rmost_digit, pos);
+        num /= 10;
+
+        if ((result = __numstr(rmost_digit, pos)))
+            break;
+
+        if (num && sep_char)
+            if((result = prepend_char(sep_char)))
+                break;
 
         if (pos % 3 == 0)
             ++triple;
         ++pos;
+    } while (num);
 
-        /* TODO: numstr(digit, place_value, triple) */
-       // printf("rightmost = %d, val = %s, place_val = %d, triple = %d\n",
-       //         rmost_digit, numstr(rmost_digit ,place_value),
-       //         place_value, triple);
-    } while (num /= 10);
+    printf("buf contains the string = %s, with result: %d\n",
+           out_ptr, result);
 
-    printf("buf contains the string = %s\n", out_ptr);
-
-    return 0;
+    return result;
 }
 
 static inline int _pow(int x, int y)

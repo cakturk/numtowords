@@ -3,8 +3,7 @@
 
 int main(void)
 {
-    printf("Hello World!\n");
-    num_to_words(NULL, 4557656.56);
+    num_to_words(NULL, 4557656.56, 0x20);
     return 0;
 }
 
