@@ -2,17 +2,10 @@
 #include <string.h>
 #include <errno.h>
 
-#define ARRAY_SIZE(__arr) (sizeof(__arr) / sizeof((__arr)[0]))
-
-struct buffer_struct {
-    size_t size;
-    char *buffer;
-    char *rev_ptr;
-} /* optional variable list */;
-
 static char *out_buf;
 static char *out_ptr;
 static size_t out_buf_size;
+static int digit_count = 0;
 
 static char *numbers[] = {
     "bir", "iki", "uc", "dort",
@@ -46,7 +39,7 @@ static inline int prepend_char(char ch)
     return 0;
 }
 
-static const char *numstr(int digit, int place_val)
+static const char *numstr(unsigned long long digit, int place_val)
 {
     char *ret = NULL;
     long long num = digit * place_val;
@@ -101,13 +94,13 @@ static const char *numstr(int digit, int place_val)
     return ret;
 }
 
-static int __num_to_words(char *buf, long num, char sep_char);
-static inline int _pow(int x, int y);
+static int __num_to_words(long num, char sep_char);
+static inline unsigned long long _pow(int x, int y);
 
 static int __numstr(int digit, int pos)
 {
-    int ret = 0;
     const char *str = NULL;
+    int ret = 0;
     int triple = pos / 3;
     int place_val = _pow(10, pos % 3);
 
@@ -117,7 +110,10 @@ static int __numstr(int digit, int pos)
             str = numstr(_pow(10, triple * 3), 1);
             if ((ret = prepend_str(str)) != 0)
                 goto err_out;
-            if (digit > 1) {
+            if (digit &&
+                (digit > 1 ||
+                 (triple > 0 && pos != digit_count - 1) ||
+                 (triple > 1 && pos == digit_count - 1))) {
                 str = numstr(digit, 1);
                 if ((ret = prepend_str(str)) != 0)
                     goto err_out;
@@ -148,32 +144,41 @@ err_out:
     return ret;
 }
 
-int num_to_words(char *buf, double num, char sep_char)
+static inline int numofdigits(long num)
 {
-    (void)buf;
+    int digits = 1;
+    if (num == 0) return 0;
+    while (num /= 10) ++digits;
+
+    return digits;
+}
+
+int num_to_words(char **buf, size_t size, double num, char sep_char)
+{
     int ret = 0;
     long integer = (long)num;
     long fraction = (num - integer) * 1000;
+    (void)fraction;
 
-    printf("integer = %ld, fraction=%ld\n", integer, fraction);
-    __num_to_words(NULL, integer, sep_char);
+    digit_count = numofdigits(integer);
+
+    out_buf = *buf;
+    out_buf_size = size;
+    out_ptr = out_buf + out_buf_size - 1;
+    *out_ptr = '\0';
+
+    ret = __num_to_words(integer, sep_char);
+    *buf = out_ptr;
 
     return ret;
 }
 
-static int __num_to_words(char *buf, long num, char sep_char)
+static int __num_to_words(long num, char sep_char)
 {
-    (void)buf;
     unsigned char rmost_digit;
     int pos = 0;
     int triple = 0;
     int result = 0;
-
-    char dummy_buf[256];
-    out_buf = dummy_buf;
-    out_buf_size = ARRAY_SIZE(dummy_buf);
-    out_ptr = out_buf + out_buf_size - 1;
-    *out_ptr = '\0';
 
     /* Extract rightmost digit and shift right */
     do {
@@ -192,15 +197,12 @@ static int __num_to_words(char *buf, long num, char sep_char)
         ++pos;
     } while (num);
 
-    printf("buf contains the string = %s, with result: %d\n",
-           out_ptr, result);
-
     return result;
 }
 
-static inline int _pow(int x, int y)
+static inline unsigned long long _pow(int x, int y)
 {
-    int result = 1;
+    unsigned long long result = 1;
     if (!x)
         return result;
 

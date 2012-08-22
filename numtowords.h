@@ -4,9 +4,11 @@
 extern "C" {
 #endif
 
-extern int num_to_words(char *buffer, double num, char sep_char);
+#define ARRAY_SIZE(__arr) (sizeof(__arr) / sizeof((__arr)[0]))
+extern int num_to_words(char **buffer, size_t size,
+                        double num, char sep_char);
 
 #ifdef __cplusplus
-{
+}
 #endif
 #endif // NUMTOWORDS_H
