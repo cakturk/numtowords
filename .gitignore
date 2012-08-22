@@ -1,2 +1,6 @@
 *.swp
 *.o
+*.diff
+*.patch
+*.vim
+tags
