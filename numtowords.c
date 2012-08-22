@@ -137,7 +137,10 @@ static int __numstr(int digit, int pos)
         str = numstr(place_val, 1);
         if ((ret = prepend_str(str)) != 0)
             goto err_out;
-        str = numstr(digit, 1);
+        if (digit > 1) {
+            str = numstr(digit, 1);
+            ret = prepend_str(str);
+        }
         break;
     }
 
