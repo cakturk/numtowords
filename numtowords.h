@@ -1,3 +1,10 @@
+/*
+ * numtowords.c
+ *
+ * Copyright (c) 2012 Cihangir Akturk
+ *
+ */
+
 #ifndef NUMTOWORDS_H
 #define NUMTOWORDS_H
 #ifdef __cplusplus

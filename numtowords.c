@@ -1,3 +1,10 @@
+/*
+ * numtowords.c
+ *
+ * Copyright (c) 2012 Cihangir Akturk
+ *
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>

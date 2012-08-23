@@ -1,3 +1,10 @@
+/*
+ * main.c
+ *
+ * Copyright (c) 2012 Cihangir Akturk
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
