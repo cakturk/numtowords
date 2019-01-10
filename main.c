@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 	result = num_to_words(&buf, ARRAY_SIZE(dummy_buf), val, sep_char);
 	if (!result)
-		printf("Num: %f, Text: %s\n", val, buf);
+		printf("Num: %f, Text: <%s>\n", val, buf);
 	else
 		fprintf(stderr,
 			"Supplied number is too large to be converted!\n");
