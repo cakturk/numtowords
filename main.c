@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	int result = 0;
 
 	char sep_char, *endptr;
-	double val;
+	unsigned long val;
 
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s str [seperator_char]\n",
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	val = strtod(argv[1], &endptr);
+	val = strtoul(argv[1], &endptr, 10);
 	sep_char = (argc > 2) ? (argv[2])[0] : 0x20;
 
 	if (errno == ERANGE) {
@@ -41,11 +41,10 @@ int main(int argc, char *argv[])
 
 	result = num_to_words(&buf, ARRAY_SIZE(dummy_buf), val, sep_char);
 	if (!result)
-		printf("Num: %f, Text: <%s>\n", val, buf);
+		printf("Num: %lu, Text: <%s>\n", val, buf);
 	else
 		fprintf(stderr,
 			"Supplied number is too large to be converted!\n");
-
 
 	exit(EXIT_SUCCESS);
 }

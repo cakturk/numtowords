@@ -9,6 +9,8 @@
 #include <string.h>
 #include <errno.h>
 
+static int __num_to_words(long num, char sep_char);
+
 static char *out_buf;
 static char *out_ptr;
 static size_t out_buf_size;
@@ -51,8 +53,6 @@ static inline int prepend_char(char ch)
 
 	return 0;
 }
-
-static int __num_to_words(long num, char sep_char);
 
 int num_to_words(char **buf, size_t size, double num, char sep_char)
 {
