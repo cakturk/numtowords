@@ -140,3 +140,8 @@ static int __num_to_words(long num, char sep_char)
 
 	return ret;
 }
+
+int convert6digits(unsigned long u)
+{
+	return 0;
+}
