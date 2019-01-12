@@ -91,7 +91,8 @@ static void hundred(int num, int nth_tri, char sep)
 				if (digit > 1)
 					prepend_str(nums[digit]);
 			} else {
-				prepend_str(nums[digit]);
+				if (digit > 0)
+					prepend_str(nums[digit]);
 			}
 			break;
 
